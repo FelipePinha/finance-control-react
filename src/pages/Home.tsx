@@ -21,7 +21,7 @@ export const Home = () => {
                     <p className="text-white">de forma rápida e segura</p>
                     <Link
                         className="text-white font-bold bg-pink-800 rounded-md w-full text-center p-3 hover:bg-pink-600 duration-200 shadow-sm"
-                        to={'#'}
+                        to={'/finanças'}
                     >
                         Iniciar
                     </Link>
