@@ -1,5 +1,6 @@
 import { Form } from '../components/Form';
 import { Header } from '../components/Header';
+import { Summary } from '../components/Summary';
 import { TotalValue } from '../components/TotalValue';
 
 export const Finances = () => {
@@ -12,7 +13,7 @@ export const Finances = () => {
                     <TotalValue />
                 </section>
                 <section>
-                    <h1>Lista de finanças</h1>
+                    <Summary />
                 </section>
             </div>
         </div>
