@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export const Header = () => {
     return (
-        <header className="py-6 px-10 md:px-52 flex justify-between items-center shadow-md">
+        <header className="py-6 px-10 md:px-52 flex justify-between items-center shadow-md bg-white">
             <h1 className="font-bold flex gap-1 text-xl">
                 <span className="text-pink-800">Nu</span>
                 Kenzie
