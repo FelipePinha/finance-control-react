@@ -1,4 +1,4 @@
-import axios from 'axios';
+import fetchFinancesApi from './axios';
 
 export type Finance = {
     id?: string;
@@ -8,8 +8,14 @@ export type Finance = {
 };
 
 export async function addFinance(newFinance: Finance) {
-    await axios
-        .post('http://localhost:3000/finances', newFinance)
+    await fetchFinancesApi
+        .post('/finances', newFinance)
         .then(() => console.log('criado com sucesso'))
         .catch(err => console.log(err.message));
+}
+
+export async function fetchFinance() {
+    const { data } = await fetchFinancesApi('/finances');
+
+    return data;
 }
