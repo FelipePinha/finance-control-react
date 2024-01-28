@@ -1,8 +1,9 @@
 import { FormEvent, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Finance, addFinance } from '../lib/api';
 
 export const Form = () => {
+    const queryClient = useQueryClient();
     const [title, setTitle] = useState('');
     const [value, setValue] = useState<number>(0);
     const [valueType, setValueType] = useState('');
@@ -10,6 +11,9 @@ export const Form = () => {
     const mutation = useMutation({
         mutationFn: (newFinance: Finance) => {
             return addFinance(newFinance);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['finances'] });
         },
     });
 

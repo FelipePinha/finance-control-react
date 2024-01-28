@@ -1,10 +1,20 @@
+import { useQuery } from '@tanstack/react-query';
 import { Card } from '../components/Card';
 import { Form } from '../components/Form';
 import { Header } from '../components/Header';
 import { Summary } from '../components/Summary';
 import { TotalValue } from '../components/TotalValue';
+import { Finance, fetchFinance } from '../lib/api';
 
 export const Finances = () => {
+    const { data: finances, isLoading } = useQuery({
+        queryKey: ['finances'],
+        queryFn: () => fetchFinance(),
+        refetchOnWindowFocus: false,
+    });
+
+    if (isLoading) return <div>carregando...</div>;
+
     return (
         <div className="w-screen h-screen bg-zinc-100 overflow-x-hidden">
             <Header />
@@ -16,9 +26,9 @@ export const Finances = () => {
                 <section>
                     <Summary />
                     <div className="">
-                        <Card />
-                        <Card />
-                        <Card />
+                        {finances?.map((finance: Finance) => (
+                            <Card key={finance.id} finance={finance} />
+                        ))}
                     </div>
                 </section>
             </div>
