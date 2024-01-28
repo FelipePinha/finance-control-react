@@ -1,13 +1,45 @@
+import { FormEvent, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { Finance, addFinance } from '../lib/api';
+
 export const Form = () => {
+    const [title, setTitle] = useState('');
+    const [value, setValue] = useState<number>(0);
+    const [valueType, setValueType] = useState('');
+
+    const mutation = useMutation({
+        mutationFn: (newFinance: Finance) => {
+            return addFinance(newFinance);
+        },
+    });
+
+    const submitForm = (e: FormEvent) => {
+        e.preventDefault();
+
+        const newFinance = {
+            title,
+            value,
+            valueType,
+        };
+
+        mutation.mutate(newFinance);
+
+        setTitle('');
+        setValue(0);
+        setValueType('');
+    };
+
     return (
         <div className="p-4 shadow-md bg-white">
-            <form className="flex flex-col rounded-sm">
-                <label htmlFor="description">Descrição</label>
+            <form onSubmit={submitForm} className="flex flex-col rounded-sm">
+                <label htmlFor="title">Título</label>
                 <input
                     className="p-4 bg-slate-100 outline-blue-300 mt-1"
                     type="text"
-                    name="description"
-                    id="description"
+                    name="title"
+                    id="title"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
                     placeholder="Digite aqui sua descrição"
                 />
 
@@ -19,16 +51,22 @@ export const Form = () => {
                             type="number"
                             name="value"
                             id="value"
+                            step=".01"
+                            value={value}
+                            onChange={e => setValue(Number(e.target.value))}
+                            placeholder="Digite o valor"
                         />
                     </div>
                     <div className="flex flex-col w-full">
                         <label htmlFor="type">Tipo de valor</label>
                         <select
+                            value={valueType}
+                            onChange={e => setValueType(e.target.value)}
                             className="p-2 bg-slate-100 outline-blue-300 mt-1"
                             name="type"
                             id="type"
                         >
-                            <option value=""></option>
+                            <option value="">Selecione uma opção</option>
                             <option value="profit">Lucro</option>
                             <option value="expense">Despesa</option>
                         </select>
