@@ -1,6 +1,6 @@
 import { FaTrash, FaPencilAlt } from 'react-icons/fa';
 import { clsx } from 'clsx';
-import { Finance } from '../lib/api';
+import { Finance } from '../types/finances-types';
 
 interface CardProps {
     finance: Finance;

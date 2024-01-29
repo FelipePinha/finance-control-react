@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Finance, addFinance } from '../lib/api';
+import { addFinance } from '../lib/api';
+import { Finance } from '../types/finances-types';
 
 export const Form = () => {
     const queryClient = useQueryClient();

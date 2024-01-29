@@ -1,11 +1,5 @@
 import fetchFinancesApi from './axios';
-
-export type Finance = {
-    id?: string;
-    title: string;
-    value: number;
-    valueType: string;
-};
+import { Finance } from '../types/finances-types';
 
 export async function addFinance(newFinance: Finance) {
     await fetchFinancesApi
