@@ -4,9 +4,13 @@ import { Form } from '../components/Form';
 import { Header } from '../components/Header';
 import { Summary } from '../components/Summary';
 import { TotalValue } from '../components/TotalValue';
-import { Finance, fetchFinance } from '../lib/api';
+import { fetchFinance } from '../lib/api';
+import { Finance } from '../types/finances-types';
+import { useState } from 'react';
 
 export const Finances = () => {
+    const [filter, setFilter] = useState<'all' | 'profit' | 'expense'>('all');
+
     const { data: finances, isLoading } = useQuery({
         queryKey: ['finances'],
         queryFn: () => fetchFinance(),
@@ -24,11 +28,19 @@ export const Finances = () => {
                     <TotalValue />
                 </section>
                 <section>
-                    <Summary />
+                    <Summary filter={filter} setFilter={setFilter} />
                     <div className="">
-                        {finances?.map((finance: Finance) => (
-                            <Card key={finance.id} finance={finance} />
-                        ))}
+                        {finances
+                            ?.filter((finance: Finance) =>
+                                filter === 'all'
+                                    ? true
+                                    : filter === 'profit'
+                                    ? finance.valueType === 'profit'
+                                    : finance.valueType === 'expense'
+                            )
+                            .map((finance: Finance) => (
+                                <Card key={finance.id} finance={finance} />
+                            ))}
                     </div>
                 </section>
             </div>
