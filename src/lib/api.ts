@@ -9,7 +9,14 @@ export async function addFinance(newFinance: Finance) {
 }
 
 export async function fetchFinance() {
-    const { data } = await fetchFinancesApi('/finances');
+    const { data } = await fetchFinancesApi.get('/finances');
 
     return data;
+}
+
+export async function deleteFinance(id: string) {
+    await fetchFinancesApi
+        .delete(`/finances/${id}`)
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
 }
