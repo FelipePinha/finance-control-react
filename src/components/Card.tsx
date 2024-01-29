@@ -3,12 +3,14 @@ import { clsx } from 'clsx';
 import { Finance } from '../types/finances-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteFinance } from '../lib/api';
+import { Dispatch, SetStateAction } from 'react';
 
 interface CardProps {
     finance: Finance;
+    setModalIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export const Card = ({ finance }: CardProps) => {
+export const Card = ({ finance, setModalIsOpen }: CardProps) => {
     const value = finance.valueType === 'expense' ? Number(finance.value) * -1 : finance.value;
     const queryClient = useQueryClient();
 
@@ -38,7 +40,10 @@ export const Card = ({ finance }: CardProps) => {
             <p>R$ {Number(value).toFixed(2)}</p>
 
             <div className="flex items-center gap-3">
-                <button className="border bg-zinc-200 cursor-pointer p-2 rounded-md">
+                <button
+                    onClick={() => setModalIsOpen(true)}
+                    className="border bg-zinc-200 cursor-pointer p-2 rounded-md"
+                >
                     <FaPencilAlt />
                 </button>
                 <button

@@ -7,9 +7,11 @@ import { TotalValue } from '../components/TotalValue';
 import { fetchFinance } from '../lib/api';
 import { Finance } from '../types/finances-types';
 import { useState } from 'react';
+import { Modal } from '../components/Modal';
 
 export const Finances = () => {
     const [filter, setFilter] = useState<'all' | 'profit' | 'expense'>('all');
+    const [modalIsOpen, setModalIsOpen] = useState(true);
 
     const { data: finances, isLoading } = useQuery({
         queryKey: ['finances'],
@@ -39,11 +41,16 @@ export const Finances = () => {
                                     : finance.valueType === 'expense'
                             )
                             .map((finance: Finance) => (
-                                <Card key={finance.id} finance={finance} />
+                                <Card
+                                    key={finance.id}
+                                    finance={finance}
+                                    setModalIsOpen={setModalIsOpen}
+                                />
                             ))}
                     </div>
                 </section>
             </div>
+            <Modal setModalIsOpen={setModalIsOpen} modalIsOpen={modalIsOpen} />
         </div>
     );
 };
