@@ -1,16 +1,33 @@
-import { FormEvent, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addFinance } from '../lib/api';
-import { Finance } from '../types/finances-types';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { clsx } from 'clsx';
+
+const createFinanceFormSchema = z.object({
+    title: z.string().min(1, 'O campo de título precisa ser preenchido.'),
+    value: z.string().min(1, 'Você precisa inserir um valor.'),
+    valueType: z.string().refine(valueType => {
+        return valueType === 'profit' || valueType === 'expense';
+    }),
+});
+
+type createFinanceFormData = z.infer<typeof createFinanceFormSchema>;
 
 export const Form = () => {
     const queryClient = useQueryClient();
-    const [title, setTitle] = useState('');
-    const [value, setValue] = useState<number>(0);
-    const [valueType, setValueType] = useState('');
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm<createFinanceFormData>({
+        resolver: zodResolver(createFinanceFormSchema),
+    });
 
     const mutation = useMutation({
-        mutationFn: (newFinance: Finance) => {
+        mutationFn: (newFinance: createFinanceFormData) => {
             return addFinance(newFinance);
         },
         onSuccess: () => {
@@ -18,58 +35,57 @@ export const Form = () => {
         },
     });
 
-    const submitForm = (e: FormEvent) => {
-        e.preventDefault();
-
-        const newFinance = {
-            title,
-            value,
-            valueType,
-        };
-
+    const createFinance = (newFinance: createFinanceFormData) => {
         mutation.mutate(newFinance);
 
-        setTitle('');
-        setValue(0);
-        setValueType('');
+        reset();
     };
 
     return (
         <div className="p-4 shadow-md bg-white">
-            <form onSubmit={submitForm} className="flex flex-col rounded-sm">
+            <form onSubmit={handleSubmit(createFinance)} className="flex flex-col rounded-sm">
                 <label htmlFor="title">Título</label>
                 <input
-                    className="p-4 bg-slate-100 outline-blue-300 mt-1"
+                    className={clsx(
+                        'p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md',
+                        errors.title ? 'border border-red-500' : ''
+                    )}
                     type="text"
-                    name="title"
                     id="title"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
+                    // value={title}
+                    // onChange={e => setTitle(e.target.value)}
                     placeholder="Digite aqui sua descrição"
+                    {...register('title')}
                 />
 
                 <div className="grid grid-cols-2 gap-5 items-center w-full my-6">
                     <div className="flex flex-col">
                         <label htmlFor="value">Valor</label>
                         <input
-                            className="p-2 bg-slate-100 outline-blue-300 mt-1"
+                            className={clsx(
+                                'p-2 bg-slate-100 outline-blue-300 mt-1 rounded-md',
+                                errors.value ? 'border border-red-500' : ''
+                            )}
                             type="number"
-                            name="value"
                             id="value"
                             step=".01"
-                            value={value}
-                            onChange={e => setValue(Number(e.target.value))}
+                            // value={value}
+                            // onChange={e => setValue(Number(e.target.value))}
                             placeholder="Digite o valor"
+                            {...register('value')}
                         />
                     </div>
                     <div className="flex flex-col w-full">
                         <label htmlFor="type">Tipo de valor</label>
                         <select
-                            value={valueType}
-                            onChange={e => setValueType(e.target.value)}
-                            className="p-2 bg-slate-100 outline-blue-300 mt-1"
-                            name="type"
+                            // value={valueType}
+                            // onChange={e => setValueType(e.target.value)}
+                            className={clsx(
+                                'p-2 bg-slate-100 outline-blue-300 mt-1 rounded-md',
+                                errors.valueType ? 'border border-red-500' : ''
+                            )}
                             id="type"
+                            {...register('valueType')}
                         >
                             <option value="">Selecione uma opção</option>
                             <option value="profit">Lucro</option>
