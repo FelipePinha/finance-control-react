@@ -1,22 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addFinance } from '../lib/api';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createFinanceFormSchema, createFinanceFormData } from '../lib/utils/form-schema';
 import { clsx } from 'clsx';
-
-const createFinanceFormSchema = z.object({
-    title: z.string().min(1, 'O campo de título precisa ser preenchido.'),
-    value: z.string().min(1, 'Você precisa inserir um valor.'),
-    valueType: z.string().refine(valueType => {
-        return valueType === 'profit' || valueType === 'expense';
-    }),
-});
-
-type createFinanceFormData = z.infer<typeof createFinanceFormSchema>;
 
 export const Form = () => {
     const queryClient = useQueryClient();
+
     const {
         register,
         handleSubmit,
@@ -52,8 +43,6 @@ export const Form = () => {
                     )}
                     type="text"
                     id="title"
-                    // value={title}
-                    // onChange={e => setTitle(e.target.value)}
                     placeholder="Digite aqui sua descrição"
                     {...register('title')}
                 />
@@ -69,8 +58,6 @@ export const Form = () => {
                             type="number"
                             id="value"
                             step=".01"
-                            // value={value}
-                            // onChange={e => setValue(Number(e.target.value))}
                             placeholder="Digite o valor"
                             {...register('value')}
                         />
@@ -78,8 +65,6 @@ export const Form = () => {
                     <div className="flex flex-col w-full">
                         <label htmlFor="type">Tipo de valor</label>
                         <select
-                            // value={valueType}
-                            // onChange={e => setValueType(e.target.value)}
                             className={clsx(
                                 'p-2 bg-slate-100 outline-blue-300 mt-1 rounded-md',
                                 errors.valueType ? 'border border-red-500' : ''

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { clsx } from 'clsx';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { updateFinanceFormData, updateFinanceFormSchema } from '../lib/utils/modal-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Finance } from '../types/finances-types';
 import { editFinance } from '../lib/api';
@@ -12,16 +12,6 @@ interface ModalProps {
     setModalIsOpen: Dispatch<SetStateAction<boolean>>;
     clickedFinance: Finance;
 }
-
-const updateFinanceFormSchema = z.object({
-    modalTitle: z.string().min(1, 'O campo de título precisa ser preenchido.'),
-    modalValue: z.string().min(1, 'Você precisa inserir um valor.'),
-    modalValueType: z.string().refine(valueType => {
-        return valueType === 'profit' || valueType === 'expense';
-    }),
-});
-
-type updateFinanceFormData = z.infer<typeof updateFinanceFormSchema>;
 
 export const Modal = ({ setModalIsOpen, modalIsOpen, clickedFinance }: ModalProps) => {
     const queryClient = useQueryClient();
