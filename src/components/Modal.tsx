@@ -31,7 +31,6 @@ export const Modal = ({ setModalIsOpen, modalIsOpen, clickedFinance }: ModalProp
     });
 
     const handleEdit = (newFinance: updateFinanceFormData) => {
-        console.log(newFinance);
         mutation.mutate({
             id: clickedFinance.id,
             title: newFinance.modalTitle,
