@@ -1,12 +1,57 @@
 import { Dispatch, SetStateAction } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { clsx } from 'clsx';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Finance } from '../types/finances-types';
+import { editFinance } from '../lib/api';
 
 interface ModalProps {
     modalIsOpen: boolean;
     setModalIsOpen: Dispatch<SetStateAction<boolean>>;
+    clickedFinance: Finance;
 }
 
-export const Modal = ({ setModalIsOpen, modalIsOpen }: ModalProps) => {
+const updateFinanceFormSchema = z.object({
+    modalTitle: z.string().min(1, 'O campo de título precisa ser preenchido.'),
+    modalValue: z.string().min(1, 'Você precisa inserir um valor.'),
+    modalValueType: z.string().refine(valueType => {
+        return valueType === 'profit' || valueType === 'expense';
+    }),
+});
+
+type updateFinanceFormData = z.infer<typeof updateFinanceFormSchema>;
+
+export const Modal = ({ setModalIsOpen, modalIsOpen, clickedFinance }: ModalProps) => {
+    const queryClient = useQueryClient();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<updateFinanceFormData>({
+        resolver: zodResolver(updateFinanceFormSchema),
+    });
+
+    const mutation = useMutation({
+        mutationFn: editFinance,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['finances'] });
+        },
+    });
+
+    const handleEdit = (newFinance: updateFinanceFormData) => {
+        console.log(newFinance);
+        mutation.mutate({
+            id: clickedFinance.id,
+            title: newFinance.modalTitle,
+            value: newFinance.modalValue,
+            valueType: newFinance.modalValueType,
+        });
+
+        setModalIsOpen(false);
+    };
+
     return (
         <div
             onClick={() => setModalIsOpen(false)}
@@ -15,7 +60,8 @@ export const Modal = ({ setModalIsOpen, modalIsOpen }: ModalProps) => {
                 !modalIsOpen ? 'hidden' : 'block'
             )}
         >
-            <div
+            <form
+                onSubmit={handleSubmit(handleEdit)}
                 onClick={e => e.stopPropagation()}
                 className="bg-white p-5 flex flex-col rounded-md w-full md:w-auto"
             >
@@ -24,24 +70,37 @@ export const Modal = ({ setModalIsOpen, modalIsOpen }: ModalProps) => {
                 <div className="flex flex-col">
                     <label htmlFor="modal-title">Título</label>
                     <input
-                        name="modal-title"
-                        className="p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md"
+                        {...register('modalTitle')}
+                        className={clsx(
+                            'p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md',
+                            errors.modalTitle ? 'border border-red-500' : ''
+                        )}
                         type="text"
+                        defaultValue={clickedFinance?.title}
                     />
                 </div>
                 <div className="flex flex-col my-5">
                     <label htmlFor="modal-value">Valor</label>
                     <input
-                        name="modal-value"
-                        className="p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md"
+                        {...register('modalValue')}
+                        className={clsx(
+                            'p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md',
+                            errors.modalValue ? 'border border-red-500' : ''
+                        )}
                         type="number"
+                        step=".01"
+                        defaultValue={clickedFinance?.value}
                     />
                 </div>
                 <div>
                     <label htmlFor="modal-valueType">Tipo de valor</label>
                     <select
-                        name="modal-valueType"
-                        className="p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md w-full"
+                        {...register('modalValueType')}
+                        className={clsx(
+                            'p-4 bg-slate-100 outline-blue-300 mt-1 rounded-md w-full',
+                            errors.modalValueType ? 'border border-red-500' : ''
+                        )}
+                        defaultValue={clickedFinance.valueType}
                     >
                         <option value="">Selecione uma opção</option>
                         <option value="profit">Lucro</option>
@@ -50,16 +109,20 @@ export const Modal = ({ setModalIsOpen, modalIsOpen }: ModalProps) => {
                 </div>
                 <div className="flex justify-end items-center gap-4 mt-5">
                     <button
+                        type="button"
                         onClick={() => setModalIsOpen(false)}
                         className="p-3 bg-zinc-200 text-black rounded-md hover:bg-zinc-300 duration-200"
                     >
                         Cancelar
                     </button>
-                    <button className="p-3 bg-pink-800 text-white rounded-md hover:bg-pink-600 duration-200">
+                    <button
+                        type="submit"
+                        className="p-3 bg-pink-800 text-white rounded-md hover:bg-pink-600 duration-200"
+                    >
                         Salvar
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     );
 };

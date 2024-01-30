@@ -11,7 +11,13 @@ import { Modal } from '../components/Modal';
 
 export const Finances = () => {
     const [filter, setFilter] = useState<'all' | 'profit' | 'expense'>('all');
-    const [modalIsOpen, setModalIsOpen] = useState(true);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [clickedFinance, setClickedFinance] = useState<Finance>({
+        id: '',
+        title: '',
+        value: '',
+        valueType: '',
+    });
 
     const { data: finances, isLoading } = useQuery({
         queryKey: ['finances'],
@@ -45,12 +51,17 @@ export const Finances = () => {
                                     key={finance.id}
                                     finance={finance}
                                     setModalIsOpen={setModalIsOpen}
+                                    setClickedFinance={setClickedFinance}
                                 />
                             ))}
                     </div>
                 </section>
             </div>
-            <Modal setModalIsOpen={setModalIsOpen} modalIsOpen={modalIsOpen} />
+            <Modal
+                setModalIsOpen={setModalIsOpen}
+                modalIsOpen={modalIsOpen}
+                clickedFinance={clickedFinance}
+            />
         </div>
     );
 };

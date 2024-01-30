@@ -8,9 +8,10 @@ import { Dispatch, SetStateAction } from 'react';
 interface CardProps {
     finance: Finance;
     setModalIsOpen: Dispatch<SetStateAction<boolean>>;
+    setClickedFinance: Dispatch<SetStateAction<Finance>>;
 }
 
-export const Card = ({ finance, setModalIsOpen }: CardProps) => {
+export const Card = ({ finance, setModalIsOpen, setClickedFinance }: CardProps) => {
     const value = finance.valueType === 'expense' ? Number(finance.value) * -1 : finance.value;
     const queryClient = useQueryClient();
 
@@ -27,6 +28,11 @@ export const Card = ({ finance, setModalIsOpen }: CardProps) => {
         mutation.mutate(finance.id!);
     };
 
+    const handleOpenModal = () => {
+        setClickedFinance(finance);
+        setModalIsOpen(true);
+    };
+
     return (
         <article
             className={clsx(
@@ -41,7 +47,7 @@ export const Card = ({ finance, setModalIsOpen }: CardProps) => {
 
             <div className="flex items-center gap-3">
                 <button
-                    onClick={() => setModalIsOpen(true)}
+                    onClick={handleOpenModal}
                     className="border bg-zinc-200 cursor-pointer p-2 rounded-md"
                 >
                     <FaPencilAlt />
