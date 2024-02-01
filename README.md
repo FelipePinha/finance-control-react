@@ -15,7 +15,7 @@ Instale as dependências
 yarn install
 ```
 
-crie um arquivo db.json na raiz do projeto com o seguinte conteúdo.
+crie um arquivo db.json na raiz do projeto com o seguinte conteúdo. Depois substitua a url da API pela do json-server.
 ```
   {
     "finances": []
