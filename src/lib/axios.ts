@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const fetchFinancesApi = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: 'https://finance-control-db.onrender.com/',
     headers: {
         'Content-type': 'application/json',
     },

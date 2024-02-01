@@ -8,9 +8,10 @@ import { fetchFinance } from '../lib/api';
 import { Finance } from '../types/finances-types';
 import { useState } from 'react';
 import { Modal } from '../components/Modal';
+import { Loading } from '../components/Loading';
 
 export const Finances = () => {
-    const [filter, setFilter] = useState<'all' | 'profit' | 'expense'>('all');
+    const [filterOpt, setFilterOpt] = useState<'all' | 'profit' | 'expense'>('all');
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [clickedFinance, setClickedFinance] = useState<Finance>({
         id: '',
@@ -25,7 +26,7 @@ export const Finances = () => {
         refetchOnWindowFocus: false,
     });
 
-    if (isLoading) return <div>carregando...</div>;
+    if (isLoading) return <Loading />;
 
     return (
         <div className="w-screen h-screen bg-zinc-100 overflow-x-hidden">
@@ -36,13 +37,13 @@ export const Finances = () => {
                     <TotalValue finances={finances} />
                 </section>
                 <section>
-                    <Summary filter={filter} setFilter={setFilter} />
-                    <div className="">
+                    <Summary filter={filterOpt} setFilter={setFilterOpt} />
+                    <div>
                         {finances
                             ?.filter((finance: Finance) =>
-                                filter === 'all'
+                                filterOpt === 'all'
                                     ? true
-                                    : filter === 'profit'
+                                    : filterOpt === 'profit'
                                     ? finance.valueType === 'profit'
                                     : finance.valueType === 'expense'
                             )
